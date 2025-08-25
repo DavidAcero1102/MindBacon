@@ -33,13 +33,25 @@
 
 <span style="font-family:Arial Black; font-size:18px;">**📸 Capturas**</span>  
 
-| Pantalla de Inicio | 
+| Pantalla de Inicio |  
 |--------------------|
 |<img width="739" height="1600" alt="image" src="https://github.com/user-attachments/assets/343f16da-30eb-4e93-821f-735d7b3fe251" />|
+|<img width="739" height="1600" alt="image" src="https://github.com/user-attachments/assets/28e44b34-01ef-4121-aecd-fef584817da8" />|
+|<img width="739" height="1600" alt="image" src="https://github.com/user-attachments/assets/f7e37efe-31ac-410f-995e-4a6819abaef6" />|
+
+
 
 ---
 
-<span style="font-family:Arial Black; font-size:22px;">**🧰 TECNOLOGÍAS UTILIZADAS**</span>  
+<span style="font-family:Arial Black; font-size:22px;">**🧰 MATERIALES Y FUNCIONAMIENTO**</span>  
+| MATERIALES | FUNCIONAMIENTO |
+|------------|----------------|
+| <img width="260" height="194" alt="image" src="https://github.com/user-attachments/assets/1e112b06-fddd-4b9c-aaa9-04b44dbc6bd3" /> | La ESP32 es un microcontrolador con WiFi y Bluetooth integrado que procesa la información de los sensores y envía datos a otros dispositivos. |
+| <img width="242" height="208" alt="image" src="https://github.com/user-attachments/assets/a0b7c775-b404-46d6-a6ec-66950ffd3a6b" /> | Recibe señales satelitales para obtener la ubicación en coordenadas de latitud y longitud en tiempo real. |
+| <img width="225" height="225" alt="image" src="https://github.com/user-attachments/assets/50a468a6-d8ce-4b89-b4b0-b1730a799144" /> | Permite armar y probar circuitos electrónicos |
+| <img width="225" height="225" alt="image" src="https://github.com/user-attachments/assets/5522e7ba-b43d-44ce-98e3-564e9fe6b472" /> | Permiten realizar conexiones rápidas y seguras entre módulos, sensores y la protoboard. |
+| <img width="225" height="225" alt="image" src="https://github.com/user-attachments/assets/62b85ef4-4f1a-4d9a-abd2-96c2a2a7b495" /> | Ayuda a medir distancias de objetos cercanos con el fin de prevenir caidas o accidentes. |
+|<img width="225" height="225" alt="image" src="https://github.com/user-attachments/assets/ea7556ce-ddd7-4e82-86b6-84e993127e6b" />  | Aplicación la cual recive las alertas el cuidador. |
 
 **Frontend:**
 - C++
