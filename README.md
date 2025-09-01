@@ -35,8 +35,7 @@
 
 | Pantalla de Inicio |  
 |--------------------|
-|<img width="739" height="1600" alt="image" src="https://github.com/user-attachments/assets/343f16da-30eb-4e93-821f-735d7b3fe251" />|
-|<img width="739" height="1600" alt="image" src="https://github.com/user-attachments/assets/28e44b34-01ef-4121-aecd-fef584817da8" />|
+|<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/041707b4-bb1a-4d21-a63e-db026c3f878f" />
 |<img width="739" height="1600" alt="image" src="https://github.com/user-attachments/assets/f7e37efe-31ac-410f-995e-4a6819abaef6" />|
 
 
