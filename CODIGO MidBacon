@@ -1,0 +1,151 @@
+// ----- BLYNK CONFIGURACIÓN -----
+#define BLYNK_TEMPLATE_ID "TMPL2aPpZQPnl"
+#define BLYNK_TEMPLATE_NAME "Quickstart Template"
+#define BLYNK_AUTH_TOKEN "yOs8NtQGR8lGlOpM7KULnAAQJrMURlcf"
+
+// ----- WiFi -----
+#define WIFI_SSID "motorola one 8717"
+#define WIFI_PASS "astronauta5050"
+
+#include <TinyGPS++.h>
+#include <HardwareSerial.h>
+#include <WiFi.h>
+#include <WiFiClient.h>
+#include <BlynkSimpleEsp32.h>
+
+// ----- GPS -----
+static const int RXPin = 16, TXPin = 17;
+static const uint32_t GPSBaud = 9600;
+
+TinyGPSPlus gps;
+HardwareSerial ss(1);  // UART1 para GPS
+
+// ----- Punto base y distancia límite -----
+double latitudBase = 4.590801;
+double longitudBase = -74.141217;
+const double limiteMetros = 10; 
+
+// ----- Ultrasonido HC-SR04 -----
+const int trigPin = 5;   
+const int echoPin = 18;  
+long duration;
+int distanceCm;
+
+// ----- Botón -----
+#define BUTTON_PIN 19     // como en tu código del botón
+int lastButtonState = HIGH;  
+
+// ----- Timers -----
+BlynkTimer timer;
+
+void setup() {
+  Serial.begin(9600);
+
+  // GPS
+  ss.begin(GPSBaud, SERIAL_8N1, RXPin, TXPin);
+  Serial.println("Iniciando GPS...");
+
+  // WiFi + Blynk
+  Blynk.begin(BLYNK_AUTH_TOKEN, WIFI_SSID, WIFI_PASS);
+
+  // Ultrasonido
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  // Botón con resistencia interna
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+
+  // Timers
+  timer.setInterval(2000L, verificarDistanciaGPS);
+  timer.setInterval(1000L, verificarUltrasonido);
+  timer.setInterval(200L, verificarBoton);
+}
+
+// ----- GPS -----
+void verificarDistanciaGPS() {
+  while (ss.available() > 0) {
+    gps.encode(ss.read());
+  }
+
+  if (gps.location.isValid() && gps.hdop.isValid() && gps.hdop.hdop() <= 2.5) {  
+    // usamos solo cuando la precisión es buena
+    double lat = gps.location.lat();
+    double lon = gps.location.lng();
+    double distancia = gps.distanceBetween(latitudBase, longitudBase, lat, lon);
+
+    Serial.print("Latitud: "); Serial.println(lat, 6);
+    Serial.print("Longitud: "); Serial.println(lon, 6);
+    Serial.print("Distancia: "); Serial.print(distancia, 2); Serial.println(" m");
+    Serial.println("---------------------------");
+
+    // Blynk
+    Blynk.virtualWrite(V0, distancia);
+    Blynk.virtualWrite(V2, lat);
+    Blynk.virtualWrite(V3, lon);
+
+    if (distancia > limiteMetros) {
+      Blynk.virtualWrite(V1, 1);
+      Serial.println("⚠️ ALERTA GPS: fuera de límite ⚠️");
+      Blynk.logEvent("alerta_gps","ALERTA: fuera de límite GPS");
+    } else {
+      Blynk.virtualWrite(V1, 0);
+    }
+  } else {
+    Serial.println("GPS sin precisión o sin señal");
+    Serial.println("---------------------------");
+    Blynk.virtualWrite(V0, 0);
+    Blynk.virtualWrite(V1, 0);
+  }
+}
+
+// ----- Ultrasonido -----
+void verificarUltrasonido() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distanceCm = duration * 0.034 / 2;
+
+  if (distanceCm >= 400 || distanceCm <= 0) {
+    Serial.println("Ultrasonido: fuera de rango");
+    Blynk.virtualWrite(V1, 0);  // Muestra 0 si no hay medida válida
+    Blynk.virtualWrite(V5, 0);  // No alerta
+  } else {
+    Serial.print("Ultrasonido Distancia: ");
+    Serial.print(distanceCm);
+    Serial.println(" cm");
+
+    // Enviar al Blynk
+    Blynk.virtualWrite(V1, distanceCm);  // 📲 Ahora se manda en V1
+
+    if (distanceCm < 10) {   // 🔴 mínimo ajustado a 10 cm
+      Blynk.virtualWrite(V5, 1);  // Activa alerta
+      Serial.println("⚠️ ALERTA ULTRASONIDO: objeto demasiado cerca ⚠️");
+      Blynk.logEvent("alerta_ultrasonido","Objeto detectado muy cerca (<10 cm)");
+    } else {
+      Blynk.virtualWrite(V5, 0);  // Sin alerta
+    }
+  }
+}
+
+
+// ----- Botón -----
+void verificarBoton() {
+  int currentState = digitalRead(BUTTON_PIN);
+
+  if (lastButtonState == HIGH && currentState == LOW) {  
+    Serial.println("⚠️ ALERTA BOTÓN: asistencia requerida ⚠️");
+    Blynk.virtualWrite(V6, 1);
+    Blynk.logEvent("alerta_boton","El botón de ayuda fue presionado");
+  }
+  
+  lastButtonState = currentState;
+}
+
+void loop() {
+  Blynk.run();
+  timer.run();
+}
